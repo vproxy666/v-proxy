@@ -1,0 +1,69 @@
+{
+    "BANNER" : {
+        "WARNING" : "警告",
+        "INSECURE_HTTP" : "你正在通过HTTP访问该页面，由于通讯没有加密可能被第三方监听窃取！",
+        "CONFIG_HTTPS" : "点<a href='#/settings'>这里</a>立即开始配置HTTPS.",
+        "SWITCH_HTTPS" : "请切换为HTTPS协议访问."
+    },
+    "SSL": {
+        "TITLE": "SSL 证书",
+        "SUBTITLE": "HTTPS加密必须按照服务端证书",
+        "DOMAIN": "域名",
+        "SUBJECT": "主题",
+        "ISSUER": "发行方",
+        "VALIDITY": "有效期",
+        "CERT" : "X.509 证书文件",
+        "KEY" : "PKCS #1/8 私钥文件",
+        "TOOLTIP_ADD" : "上传新的SSL证书",
+        "TOOLTIP_DEL" : "移除该证书"
+    },
+    "USER": {
+        "TITLE": "用户",
+        "SUBTITLE": "管理用户账号",
+        "USERNAME": "用户名",
+        "PASSWORD": "密码",
+        "LEVEL": "类型",
+        "SHOW" : "显示",
+        "HIDE" : "隐藏",
+        "TOOLTIP_ADD" : "添加新用户",
+        "ADMIN" : "管理员",
+        "USER" : "普通用户",
+        "USER2" : "普通用户 (仅能使用代理)",
+        "DISABLED" : "已禁用"
+    },
+    "NETWORK" : {
+        "TITLE": "网络",
+        "SUBTITLE": "配置网络相关基本设置",
+        "HTTP_PORT" : "HTTP 监听端口号",
+        "HTTP_PORT_TIP" : "由启动参数 <code>--http-port</code> 控制",
+        "HTTPS_PORT" : "HTTPS 监听端口号",
+        "HTTPS_PORT_TIP" : "由启动参数 <code>--https-port</code> 控制",
+        "ORIGIN_URL" : "反向代理源地址",
+        "ORIGIN_URL_TIP" : "方向代理的回源URL, 例如：<code>http://127.0.0.1:18088</code>  <code>https://domain/path</code>",
+        "DISGUISE_MODE" : "潜伏模式",
+        "DISGUISE_MODE_TEXT" : "如果HTTP/1.1代理请求中没有含有有效的凭据，则以反向代理服务器方式工作",
+        "DISGUISE_MODE_WARN" : "<b>警告</b> : 潜伏模式已经关闭，服务器可被侦测到运行有HTTP代理.",
+        "BUTTON_CHANGE" : "保存",
+        "ENABLE_HTTP" : "HTTP正向代理",
+        "ENABLE_HTTP_TEXT" : "启用不安全的HTTP正向代理",
+        "ENABLE_HTTPS" : "HTTPS正向代理",
+        "ENABLE_HTTPS_TEXT" : "启用安全的HTTPS正向代理（不可关闭）"
+    },
+    "TOPOLOGY" : {
+        "TITLE": "基本信息",
+        "SUBTITLE": "查看系统基本配置",
+        "NORMAL_CLIENT" : "匿名用户",
+        "NORMAL_REQUEST" : "一般的HTTP(S)请求",
+        "ORIGIN_SERVER" : "源服务器",
+        "PROXY_CLIENT" : "代理客户端",
+        "PROXY_REQUEST" : "HTTPS代理请求",
+        "CERTIFICATES" : "个证书",
+        "INTERNET" : "互联网",
+        "MANAGER" : "控制台",
+        "PORT" : "端口",
+        "PARAMETER" : "参数",
+        "SECURE_PATH" : "安全路径",
+        "ORIGIN_URL" : "回源地址",
+        "UNSET" : "设置"
+    }
+}

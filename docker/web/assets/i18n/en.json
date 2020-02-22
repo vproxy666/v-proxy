@@ -1,0 +1,70 @@
+{
+    "BANNER" : {
+        "WARNING" : "Warning",
+        "INSECURE_HTTP" : "You are accessing this page via HTTP which can be sniffered by others. ",
+        "CONFIG_HTTPS" : "Please <a href='#/settings'>configure</a> and enable HTTPS immediately.",
+        "SWITCH_HTTPS" : "Please switch to HTTPS."
+    },
+    "SSL": {
+        "TITLE": "SSL Certificates",
+        "SUBTITLE": "Required By HTTPS port to enable encryption",
+        "DOMAIN": "Domain Name",
+        "SUBJECT": "Subject",
+        "ISSUER": "Issuer",
+        "VALIDITY": "Validity Period",
+        "CERT" : "X.509 Certificate",
+        "KEY" : "PKCS #1/8 Private Key",
+        "TOOLTIP_ADD" : "Add new SSL certificate",
+        "TOOLTIP_DEL" : "Remove this SSL certificate"
+    },
+    "USER": {
+        "TITLE": "Users",
+        "SUBTITLE": "Manager Users",
+        "USERNAME": "Username",
+        "PASSWORD": "Password",
+        "LEVEL": "Type",
+        "SHOW" : "SHOW",
+        "HIDE" : "HIDE",
+        "TOOLTIP_ADD" : "Add new user",
+        "TOOLTIP_DEL" : "Remove this user",
+        "ADMIN" : "Administrator",
+        "USER" : "User",
+        "USER2" : "User (Only access proxy)",
+        "DISABLED" : "Disabled"
+    },
+    "NETWORK" : {
+        "TITLE": "Network",
+        "SUBTITLE": "Configure network",
+        "HTTP_PORT" : "HTTP Port",
+        "HTTP_PORT_TIP" : "Configured by <code>--http-port</code> parameter on start up",
+        "HTTPS_PORT" : "HTTPS Port",
+        "HTTPS_PORT_TIP" : "Configured by <code>--https-port</code> parameter on start up",
+        "ORIGIN_URL" : "Reverse Proxy Origin",
+        "ORIGIN_URL_TIP" : "Backend URL of reverse proxy. e.g. <code>http://127.0.0.1:18088</code>; <code>https://domain/path</code>",
+        "DISGUISE_MODE" : "Enable Disguise Mode",
+        "DISGUISE_MODE_TEXT" : "Work as reverse proxy when supplied credentials in HTTP/1.1 proxy requests are not valid.",
+        "DISGUISE_MODE_WARN" : "<b>Warning</b> : Disguise mode is off. One can detect HTTPS proxy is running.",
+        "BUTTON_CHANGE" : "CHANGE",
+        "ENABLE_HTTP" : "Enable HTTP proxy",
+        "ENABLE_HTTP_TEXT" : "Enable insecure HTTP proxy",
+        "ENABLE_HTTPS" : "Enable HTTPS proxy",
+        "ENABLE_HTTPS_TEXT" : "Always enabled"
+    },
+    "TOPOLOGY" : {
+        "TITLE": "General Info",
+        "SUBTITLE": "Basic information",
+        "NORMAL_CLIENT" : "Anonymous Users",
+        "NORMAL_REQUEST" : "Normal HTTP(S) Requests",
+        "ORIGIN_SERVER" : "Origin Server",
+        "PROXY_CLIENT" : "Proxy Client",
+        "PROXY_REQUEST" : "HTTPS Tunnel",
+        "CERTIFICATES" : "Certificate(s)",
+        "INTERNET" : "Internet",
+        "MANAGER" : "Console",
+        "PORT" : "Port",
+        "PARAMETER" : "Parameter",
+        "SECURE_PATH" : "Path",
+        "ORIGIN_URL" : "Origin URL",
+        "UNSET" : "Setup"
+    }
+}

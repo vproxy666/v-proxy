@@ -68,6 +68,8 @@ sudo docker logs -f vproxy;
 
 ![Start Screen](./doc/startscreen.jpg)
 
+
+
 ### Step 2. Setup SSL
 
 As this point, HTTPS is not enabled. Please open the `Console URL` in web browser to configure HTTPS. The username and password are also presented on start screen.
@@ -77,8 +79,18 @@ As this point, HTTPS is not enabled. Please open the `Console URL` in web browse
 After SSL certificate is installed, make sure DNS record is updated correctly.
 From now on, you'd better always access Web Console via HTTPS.
 
+Next, you can create users
+
+![User manager](./doc/manage_user.jpg)
+
 
 ### Step 3. Setup Client
 
-*TO Be Continued*
+Now you can setup client to leverage the HTTPS proxy. Here are recommanded softwares
 
+
+| Platform      | Software                                                                                                                                     | Comments                                                                                                                         |
+| ------------- |:--------------------------------------------------------------------------------------------------------------------------------------------:| ---------------------------------------------------------------------------------------------------------------------------------|
+| iOS           | ![](./doc/shadowrocket.jpg) <a href="https://apps.apple.com/us/app/shadowrocket/id932747118" target="_blank">Shadowrocket</a>                | <a href="doc/shadowrocket_1.jpg" target="_blank">Screenshot1</a>  <a href="doc/shadowrocket_2.jpg" target="_blank">Screenshot2</a> |
+
+_To be continued_

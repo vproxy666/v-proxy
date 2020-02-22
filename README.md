@@ -1,4 +1,4 @@
-# VProxy = HTTP Forward Proxy + HTTP Reverse Proxy + Web Console
+# VProxy = HTTP Forward Proxy + HTTP Reverse Proxy
 
 ![Schema](./doc/schema.jpg)
 

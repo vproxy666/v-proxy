@@ -17,12 +17,18 @@ use http::uri::{ Uri, Scheme };
 use crate::tcp_server;
 use crate::upstream;
 use crate::data::{ self, config };
+use crate::letsencrypt;
 
 
 lazy_static! {
     static ref RE_CONTENT_TYPE: Regex = Regex::new(r"(?:multipart/form\-data;\s*boundary\s*=\s*)(?P<boundary>[^\s]+)").unwrap();
     static ref RE_COMMON_NAME: Regex = Regex::new(r"(?:\bCN\s*=\s*)(?P<CN>[^,]+)").unwrap();
+    static ref RE_DOMAIN: Regex = Regex::new(r"^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\.[a-zA-Z]{2,6})$").unwrap();
+    static ref RE_EMAIL: Regex = Regex::new(r"@").unwrap();
 }
+
+
+
 
 
 pub async fn handle(req: Request<Body>, client_addr : SocketAddr) -> Result<Response<Body>, hyper::Error> {
@@ -32,9 +38,11 @@ pub async fn handle(req: Request<Body>, client_addr : SocketAddr) -> Result<Resp
         (&Method::GET, "/api/ssl_certificate") => get_ssl_certificates(&client_addr).await,
         (&Method::POST, "/api/ssl_certificate") => add_ssl_certificates(req, &client_addr).await,
         (&Method::DELETE, "/api/ssl_certificate") => del_ssl_certificate(req, &client_addr).await,
+        (&Method::GET, "/api/ssl_certificate/letsencrypt") => request_ssl_certificate(req, &client_addr).await,
         (&Method::GET, "/api/user") => get_users(&client_addr).await,
         (&Method::POST, "/api/user") => save_user(req, &client_addr).await,
         (&Method::DELETE, "/api/user") => del_user(req, &client_addr).await,
+        
         (method, path) => {
             Ok(
                 build_error_response(StatusCode::NOT_FOUND
@@ -71,7 +79,7 @@ fn build_success_response(payload : serde_json::value::Value) -> Response<Body> 
 
 
 async fn get_basic_info(_client_addr : &SocketAddr) -> Result<Response<Body>, hyper::Error> {
-    let (http_port, https_port) = tcp_server::get_listening_ports().await;
+    let listening_info = tcp_server::get_listening_info().await;
 
     let certs_num = match data::get_ssl_certificates() {
         Ok(vec) => vec.len(),
@@ -80,8 +88,9 @@ async fn get_basic_info(_client_addr : &SocketAddr) -> Result<Response<Body>, hy
 
     let payload = json!({
         "success": true,
-        "http_port": http_port,
-        "https_port": https_port,
+        "http_port": listening_info.http_port,
+        "https_port": listening_info.https_port,
+        "https_enabled": listening_info.is_https_enabled,
         "console_path": config::get_console_path(),
         "origin_url": config::get_origin_url(),
         "certificate_num" : certs_num,
@@ -416,4 +425,50 @@ async fn del_user(req: Request<Body>, _client_addr : &SocketAddr) -> Result<Resp
         "success": true
     });
     Ok(build_success_response(payload))
+}
+
+
+async fn request_ssl_certificate(req: Request<Body>, _client_addr : &SocketAddr) -> Result<Response<Body>, hyper::Error> {
+
+    let params = form_urlencoded::parse(req.uri().query().unwrap_or("").as_bytes())
+        .into_owned()
+        .collect::<HashMap<String, String>>();
+
+    if let Some(domain) = params.get("domain"){
+        if !RE_DOMAIN.is_match(domain) {
+            return Ok( build_error_response( StatusCode::BAD_REQUEST, "Invalid parameter `domain`") );
+        }
+
+        if let Some(email) = params.get("email"){
+            if !RE_EMAIL.is_match(email) {
+                return Ok( build_error_response( StatusCode::BAD_REQUEST, "Invalid parameter `email`") );
+            }
+            let payload = match letsencrypt::request(domain.as_str(), email.as_str()).await{
+                Ok((success, output)) => {
+                    json!({
+                        "success": success,
+                        "output":  output,
+                    })
+                },
+                Err(e) => {
+                    json!({
+                        "success": false,
+                        "output":  format!("{}", e),
+                    })
+                }
+            };
+            return Ok(build_success_response(payload));
+        } else {
+            return Ok( build_error_response( StatusCode::BAD_REQUEST, "Missing parameter `email`") );
+        }
+
+        
+    } else {
+        return Ok( build_error_response( StatusCode::BAD_REQUEST, "Missing parameter `domain`") );
+    }
+    
+    
+
+
+    
 }

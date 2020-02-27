@@ -20,33 +20,28 @@ The traffic is encrypted by TLS hence client is unable to detect there is an HTT
 
 ### Step 0. Prerequisites
 
-A domain name and its SSL certificate files are requried to setup HTTPS.
+A domain name is required to setup HTTPS.
 
 ### Step 1. Deployment
 
-You can download binaries on Release page and start directly.
+It is recommended to deploy VProxy as docker container. The docker image inherits from Let's Encyprt [certbot](https://hub.docker.com/r/certbot/certbot) to request free SSL certificate.
 
-By default, VProxy listens on port 80 for HTTP and port 443 for HTTPS. 
-You can override the default ports by specifying `--http-port` and `--https-port` as start parameters.
-
-```
-v-proxy --http-port=80 --https-port=443
-```
-
-
-Alternatively, VProxy can be deployed as docker container. It is also the recommended way.
-
-To deploy VProxy as docker container, first create a data volume
+First create a data volume
 ```bash
 sudo docker volume create --name vproxy-data
 ```
 
-Then start the container as below
+Then start the container
 ```bash
-sudo docker run -it --name vproxy --network host -v vproxy-data:/app/data/:rw vproxy/server:latest
+sudo docker run -it --name vproxy --network host -v vproxy-data:/app/data/:rw -v vproxy-data:/etc/letsencrypt:rw -v vproxy-data:/var/lib/letsencrypt:rw vproxy/server
 ```
 
-Certainly the container can be started as Linux daemon. Here is an example
+* Volume `/app/data/` hosts application data of vproxy
+* Volumes `/etc/letsencrypt` and `/var/lib/letsencrypt` are required by [certbot](https://hub.docker.com/r/certbot/certbot) to store certificates.
+
+
+
+Certainly the container can be started as Linux daemon. Here is a full example
 ```bash
 #!/bin/bash
 
@@ -60,33 +55,57 @@ sudo docker run -d \
   --network host \
   --restart=always \
   -v vproxy-data:/app/data/:rw \ 
+  -v vproxy-data:/etc/letsencrypt:rw \
+  -v vproxy-data:/var/lib/letsencrypt:rw \
   --cap-add net_bind_service \
-  vproxy/server:latest  --https-port=1443
+  vproxy/server:latest
 
-sudo docker logs -f vproxy;
+sudo docker logs -f vproxy;  #Watch the logs
 ```
 
+After docker contaienr is started, startup screen presents as below.
 ![Start Screen](./doc/startscreen.jpg)
 
 
 
 ### Step 2. Setup SSL
 
-As this point, HTTPS is not enabled. Please open the `Console URL` in web browser to configure HTTPS. The username and password are also presented on start screen.
+In the startup screen, `Console URL` is presented.
+Copy the `Console URL` in startup screen to your local machine's web browser, open it.
+It loads the management backend after input username and password which are presented in startup screen as well.
 
-![Configuration](./doc/configuration.jpg)
 
-After SSL certificate is installed, make sure DNS record is updated correctly.
-From now on, you'd better always access Web Console via HTTPS.
+![Configuration](./doc/setupssl_1_en.jpg)
 
-Next, you can create users
+Now you can upload SSL certificate files.
 
-![User manager](./doc/manage_user.jpg)
+Alternatively you can install a free SSL certificate by clicking "Request free SSL/TLS certificate".
+
+
+![Configuration](./doc/setupssl_2_en.jpg)
+
+You can input the domain name and email address to request.
+
+By clicking "Request" button, Let's Encrypt sends an HTTP GET request to `http://some.domain.com:80`.
+Hence before requesting a new SSL certificate, the domain name must be resolved to the server's Internet IP Address.
+And the web site is accessible at port 80 to the Internet. 
+
+If everything goes ok, the new SSL certificate is instally automatically.
+
+![Configuration](./doc/setupssl_3_en.jpg)
+
+Try to switch to HTTPS to ensure it is accessible.
 
 
 ### Step 3. Setup Client
 
-Now you can setup client to leverage the HTTPS proxy. Here are recommanded softwares
+Next,create users who can use HTTPS proxy to access Internet.
+
+![User manager](./doc/manage_user.jpg)
+
+Next, install client and fill in your `domain name` / `port` / `username` / `password` to access. 
+
+Here are recommanded softwares :
 
 
 | Platform      | Software                                                                                                                                     | Comments                                                                                                                         |

@@ -165,6 +165,31 @@ pub fn add_ssl_certificates(ssl_certificate : &SslCertificate) -> Result<(), Sql
 }
 
 
+pub fn save_ssl_certificates(ssl_certificate : &SslCertificate) -> Result<(), SqlError>  {
+
+    let db_path = &DB_PATH.read().unwrap();
+
+    let conn = Connection::open_with_flags(db_path.as_str(), OpenFlags::SQLITE_OPEN_CREATE |
+        OpenFlags::SQLITE_OPEN_READ_WRITE |
+        OpenFlags::SQLITE_OPEN_SHARED_CACHE)?;
+
+    conn.execute_named("
+    REPLACE INTO ssl_certificate(Domain, Certificate, Key, Subject, Issuer, ValidFrom, ValidTo) 
+    VALUES (:domain, :certificate, :key, :subject, :issuer, :valid_from, :valid_to);",
+        &[
+            (":domain", &ssl_certificate.domain),
+            (":certificate", &ssl_certificate.certificate),
+            (":key", &ssl_certificate.key),
+            (":subject", &ssl_certificate.subject.as_ref().map(|s| s.as_str()).unwrap_or("")),
+            (":issuer", &ssl_certificate.issuer.as_ref().map(|s| s.as_str()).unwrap_or("")),
+            (":valid_from", &ssl_certificate.valid_from.as_ref().map(|s| s.as_str()).unwrap_or("")),
+            (":valid_to", &ssl_certificate.valid_to.as_ref().map(|s| s.as_str()).unwrap_or("")),
+        ]
+    )?;
+    Ok(())
+}
+
+
 pub fn del_ssl_certificate(id : i32) -> Result<(), SqlError>  {
 
     let db_path = &DB_PATH.read().unwrap();

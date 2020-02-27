@@ -1,3 +1,4 @@
+#![recursion_limit="256"]
 #[macro_use] extern crate log;
 #[macro_use] extern crate lazy_static;
 extern crate env_logger;
@@ -6,8 +7,10 @@ extern crate clap;
 
 use std::env;
 use std::sync::Arc;
-use tokio;
 use std::path::Path;
+use std::fs;
+use tokio;
+
 use uuid::Uuid;
 
 
@@ -19,6 +22,7 @@ mod web_server;
 mod api_server;
 mod data;
 mod misc;
+mod letsencrypt;
 
 use data::user::{ self, User};
 
@@ -52,7 +56,7 @@ async fn main() {
     let default_pwd = Uuid::new_v4().to_simple().to_string();
     let matches = clap::App::new("VProxy")
         .version(VERSION)
-        .author("vprox.dev")
+        .author("github.com/vproxy666/v-proxy")
         .about("HTTPS proxy + Reverse proxy with integrated management console")
         .arg(clap::Arg::with_name("data_dir")
             .long("data_dir")
@@ -124,7 +128,15 @@ async fn main() {
     }
 
     println!("Console Path             : {}", data::config::get_console_path());
-    web_server::set_root(web_root).await;
+    let challenge_root = Path::new(data_dir).join("challenge");
+    if let Err(e) = fs::create_dir_all(&challenge_root) {
+        error!("Unable to create directory {} : {}", &challenge_root.to_str().unwrap_or(""), e);
+        warn!("尝试运行此命令给予权限: sudo chmod a+rw -R \"DATA文件夹路径\"");
+        info!("Fatal error, exiting ....");
+        return;
+    }
+    data::config::set_challenge_root(challenge_root.to_str().unwrap());
+    web_server::set_root(web_root, challenge_root.to_str().unwrap()).await;
 
     println!("Reverse Proxy Origin URL : {}", data::config::get_origin_url());
     match data::config::get_origin_url().parse() {

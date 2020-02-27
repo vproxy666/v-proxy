@@ -10,6 +10,7 @@ static DISGUISE_MODE: &'static str = "DISGUISE_MODE";
 static HTTP_PROXY: &'static str = "HTTP_PROXY";
 static ENABLED: &'static str = "ENABLED";
 static DISABLED: &'static str = "DISABLED";
+static CHALLENGE_ROOT: &'static str = "CHALLENGE_ROOT";
 
 // to avoid frequent lookup database, we use a hashmap to cache
 lazy_static! {
@@ -119,3 +120,21 @@ pub fn is_http_proxy_enabled() -> bool {
         } 
     }
 }
+
+
+
+pub fn get_challenge_root() -> String {
+    match get_config_item(CHALLENGE_ROOT) {
+        Some(val) if !val.is_empty() => val,
+        _ => {
+            "".to_string()
+        } 
+    }
+}
+
+
+// Set backend path
+pub fn set_challenge_root(path : &str) {
+    set_config_item(CHALLENGE_ROOT, path.to_string());
+}
+

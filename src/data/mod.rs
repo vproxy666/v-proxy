@@ -64,6 +64,10 @@ pub fn del_ssl_certificate(id : i32) -> Result<(), SqlError> {
 }
 
 
+pub fn save_ssl_certificates(ssl_certificate : &SslCertificate) -> Result<(), SqlError>  {
+    accessor::save_ssl_certificates(ssl_certificate)
+}
+
 
 
 

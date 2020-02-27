@@ -15,7 +15,8 @@
         "CERT" : "X.509 证书文件",
         "KEY" : "PKCS #1/8 私钥文件",
         "TOOLTIP_ADD" : "上传新的SSL证书",
-        "TOOLTIP_DEL" : "移除该证书"
+        "TOOLTIP_DEL" : "移除该证书",
+        "REQUEST_SSL" : "申请免费SSL/TLS证书"
     },
     "USER": {
         "TITLE": "用户",
@@ -39,7 +40,7 @@
         "HTTPS_PORT" : "HTTPS 监听端口号",
         "HTTPS_PORT_TIP" : "由启动参数 <code>--https-port</code> 控制",
         "ORIGIN_URL" : "反向代理源地址",
-        "ORIGIN_URL_TIP" : "方向代理的回源URL, 例如：<code>http://127.0.0.1:18088</code>  <code>https://domain/path</code>",
+        "ORIGIN_URL_TIP" : "反向代理的回源URL, 例如：<code>http://127.0.0.1:18088</code>  <code>https://domain/path</code>",
         "DISGUISE_MODE" : "潜伏模式",
         "DISGUISE_MODE_TEXT" : "如果HTTP/1.1代理请求中没有含有有效的凭据，则以反向代理服务器方式工作",
         "DISGUISE_MODE_WARN" : "<b>警告</b> : 潜伏模式已经关闭，服务器可被侦测到运行有HTTP代理.",
@@ -65,5 +66,15 @@
         "SECURE_PATH" : "安全路径",
         "ORIGIN_URL" : "回源地址",
         "UNSET" : "设置"
+    },
+    "REQ_SSL_DLG" : {
+        "TITLE": "从Let's Encrypt申请免费证书",
+        "DOMAIN_NAME": "域名",
+        "EMAIL" : "Email (发送到Let's Encrypt用于接受紧急通知和安全更新邮件)",
+        "OP1": "Let's Encrypt将会访问该站点，此站点必须能够从互联网上以HTTP 80端口访问。",
+        "OP2": "Let's Encrypt将会通过域名访问该站点，域名的DNS解析必须指向该服务器的公网IP。",
+        "OP3": "在修改了域名解析后，一般需要等待一小会Let's Encrypt才能解析到。",
+        "BUTTON_REQ" : "申请",
+        "BUTTON_CLOSE" : "关闭"
     }
 }

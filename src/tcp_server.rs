@@ -2,6 +2,7 @@
 use std::sync::Arc;
 use std::io::{ BufReader };
 use std::net::{ SocketAddr };
+use futures::channel::oneshot::{ self, Sender, Receiver };
 
 use async_std::sync::{ RwLock };
 use hyper::service::{service_fn}; 
@@ -19,72 +20,145 @@ use crate::http_proxy;
 use crate::web_server;
 use crate::data::{ self, SslCertificate };
 
+#[derive(Clone)]
+pub struct ListeningInfo {
+    pub http_port : u16,
+    pub https_port : u16,
+    pub is_https_enabled : bool,
+}
+
+impl ListeningInfo {
+    fn default() -> ListeningInfo {
+        ListeningInfo {
+            http_port : 80,
+            https_port : 443,
+            is_https_enabled : false,
+        }
+    }
+}
 
 lazy_static! {
     static ref TLS_ACCEPTOR: RwLock<TlsAcceptor> = RwLock::new(TlsAcceptor::from(Arc::new(ServerConfig::new(NoClientAuth::new()))));
-    static ref HTTP_PORT: RwLock<u16> = RwLock::new(0);
-    static ref HTTPS_PORT: RwLock<u16> = RwLock::new(0);
+    static ref LISTENING_INFO : RwLock<ListeningInfo> = RwLock::new(ListeningInfo::default());
+    static ref SIGNALER : RwLock<Option<Sender<()>>> = RwLock::new(None);
 }
 
-pub async fn get_listening_ports() -> (u16, u16) {
-    let http_port = HTTP_PORT.read().await;
-    let https_port = HTTPS_PORT.read().await;
-    (http_port.clone(),  https_port.clone())
+pub async fn get_listening_info() -> ListeningInfo {
+    LISTENING_INFO.read().await.clone()
 }
 
 pub async fn run(http_port:u16, https_port : u16) -> Result<(), hyper::error::Error> {
-    {
-        let mut port = HTTP_PORT.write().await;
-        *port = http_port;
-    }
 
+
+    let http_addr = format!("0.0.0.0:{}", http_port);
+    let https_addr = format!("0.0.0.0:{}", https_port);
+    
+    let (sender, receiver) = oneshot::channel::<()>();
+    
     {
-        let mut port = HTTPS_PORT.write().await;
-        *port = https_port;
+        let mut signaler = SIGNALER.write().await;
+        *signaler = Some(sender);
+    }
+    {
+        let mut listening_info = LISTENING_INFO.write().await;
+        *listening_info = ListeningInfo {
+            http_port : http_port,
+            https_port : https_port,
+            is_https_enabled : false,
+        };
     }
 
     reload_tls_config().await;
-
-    let addr_str = format!("0.0.0.0:{}", http_port);
-    let addr = addr_str.parse::<SocketAddr>().expect(&format!("Unable to parse address {}", addr_str));
-
-    let http_listener = TcpListener::bind(&addr).await.expect(&format!("HTTP failed to bind {}", addr_str));
-    info!("HTTP is listening on {}", addr_str);
-
-    let addr_str = format!("0.0.0.0:{}", https_port);
-    let addr = addr_str.parse::<SocketAddr>().expect(&format!("Unable to parse address {}", addr_str));
-
-    let https_listener = TcpListener::bind(&addr).await.expect(&format!("HTTPS failed to bind {}", addr_str));
-    info!("HTTPS is listening on {}", addr_str);
-
  
-    futures::join!( run_http(http_listener), run_https(https_listener));
+    futures::join!( run_http(http_addr), run_https(https_addr, receiver));
     Ok(())
 }
 
-async fn run_http(mut listener : TcpListener) {
+
+pub async fn reload_tls_config() {
+    let ssl_certificates = match data::get_ssl_certificates() {
+        Ok(c) => c,
+        Err(e) => {
+            error!("get_ssl_certificates() failed. {:?} - {}", e, e);
+            return;
+        }
+    };
+
+    let mut resolver = ResolvesServerCertUsingSNI::new();
+
+    let mut count : i32 = 0;
+    for ssl_certificate in ssl_certificates{
+        if let Err(e) = add_to_resolver( &mut resolver, &ssl_certificate) {
+            error!("Unable to load certificates for {}. {:?} - {}", &ssl_certificate.domain, e, e);
+        } else {
+            count += 1;
+        }
+    }
+
+    if count == 0 {
+        warn!("No certificate is loaded. HTTPS cannot be enabled");
+    } else {
+        let mut config = ServerConfig::new(NoClientAuth::new());
+        config.cert_resolver = Arc::new(resolver);
+        config.versions = vec![ProtocolVersion::TLSv1_3, ProtocolVersion::TLSv1_2, ProtocolVersion::TLSv1_1];
+        {
+            let mut tls_acceptor = TLS_ACCEPTOR.write().await;
+            *tls_acceptor = TlsAcceptor::from(Arc::new(config));
+        }
+        info!("HTTPS loaded {} certificates", count);
+
+        let listening_info = get_listening_info().await;
+        if !listening_info.is_https_enabled {
+            let mut signaler = SIGNALER.write().await;
+            if let Some(sender) = signaler.take() {
+                let _ = sender.send(());
+            }
+        }
+    }  
+
+}
+
+
+
+
+
+async fn run_http(addr : String) {
+    let mut listener = TcpListener::bind(&addr).await.expect(&format!("HTTP failed to bind {}", &addr));
+    info!("HTTP is listening on {}", addr);
+
     loop {
         let result = listener.accept().await;
         if let Err(e) = result {
-            error!("Unable to accept HTTP connection. {}", e);
+            error!("Unable to accept HTTPS connection. {}", e);
             continue;
         } else if let Ok((socket, client_addr)) = result  {
             tokio::spawn(async move {
                 let result = Http::new()
-                            .http1_only(true)
-                            .serve_connection(socket, service_fn(move |req| handle(req, client_addr)))
-                            .with_upgrades()
-                            .await;
-                        if let Err(e) = result {
-                            info!("hyper serve_connection({}) failed. {}", client_addr, e);
-                        }
+                    .http1_only(true)
+                    .serve_connection(socket, service_fn(move |req| handle(req, client_addr)))
+                    .with_upgrades()
+                    .await;
+                if let Err(e) = result {
+                    info!("hyper serve_connection({}) failed for HTTP. {}", client_addr.ip(), e);
+                }
             });
+            
         }
     }
 }
 
 
-async fn run_https(mut listener : TcpListener) {
+async fn run_https(addr : String, receiver : Receiver<()>) {
+    let mut listener = TcpListener::bind(&addr).await.expect(&format!("HTTPS failed to bind {}", &addr));
+
+    receiver.await.expect("HTTPS failed to start because it cannot receive signal.");
+    info!("HTTPS is listening on {}", addr);
+
+    {
+        let mut listening_info = LISTENING_INFO.write().await;
+        listening_info.is_https_enabled = true;
+    }
+
     loop {
         let result = listener.accept().await;
         if let Err(e) = result {
@@ -101,7 +175,7 @@ async fn run_https(mut listener : TcpListener) {
                             .with_upgrades()
                             .await;
                         if let Err(e) = result {
-                            info!("hyper serve_connection({}) failed. {}", client_addr, e);
+                            info!("hyper serve_connection({}) failed for HTTPS. {}", client_addr.ip(), e);
                         }
                     },
                     Err(e) => {
@@ -109,6 +183,7 @@ async fn run_https(mut listener : TcpListener) {
                     }
                 }
             });
+            
         }
     }
 }
@@ -177,42 +252,6 @@ pub fn test_ssl_certificate(ssl_certificate : &SslCertificate) -> Result<(), TLS
     let mut resolver = ResolvesServerCertUsingSNI::new();
     add_to_resolver(&mut resolver, ssl_certificate)?;
     Ok(())
-}
-
-
-pub async fn reload_tls_config() {
-
-    let ssl_certificates = match data::get_ssl_certificates() {
-        Ok(c) => c,
-        Err(e) => {
-            error!("get_ssl_certificates() failed. {:?} - {}", e, e);
-            return;
-        }
-    };
-
-    let mut resolver = ResolvesServerCertUsingSNI::new();
-
-    let mut count : i32 = 0;
-    for ssl_certificate in ssl_certificates{
-        if let Err(e) = add_to_resolver( &mut resolver, &ssl_certificate) {
-            error!("Unable to load certificates for {}. {:?} - {}", &ssl_certificate.domain, e, e);
-        } else {
-            count += 1;
-        }
-    }
-
-    if count == 0 {
-        warn!("No certificate is loaded. HTTPS cannot be enabled");
-    } else {
-        let mut config = ServerConfig::new(NoClientAuth::new());
-        config.cert_resolver = Arc::new(resolver);
-        config.versions = vec![ProtocolVersion::TLSv1_3, ProtocolVersion::TLSv1_2, ProtocolVersion::TLSv1_1];
-        let mut tls_acceptor = TLS_ACCEPTOR.write().await;
-        *tls_acceptor = TlsAcceptor::from(Arc::new(config));
-        info!("HTTPS loaded {} certificates", count);
-    }
-
-    
 }
 
 

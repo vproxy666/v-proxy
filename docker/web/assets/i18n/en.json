@@ -15,7 +15,8 @@
         "CERT" : "X.509 Certificate",
         "KEY" : "PKCS #1/8 Private Key",
         "TOOLTIP_ADD" : "Add new SSL certificate",
-        "TOOLTIP_DEL" : "Remove this SSL certificate"
+        "TOOLTIP_DEL" : "Remove this SSL certificate",
+        "REQUEST_SSL" : "Request free SSL/TLS certificate"
     },
     "USER": {
         "TITLE": "Users",
@@ -66,5 +67,16 @@
         "SECURE_PATH" : "Path",
         "ORIGIN_URL" : "Origin URL",
         "UNSET" : "Setup"
+    },
+    "REQ_SSL_DLG" : {
+        "TITLE": "Request a free TLS certificate from Let's Encrypt",
+        "DOMAIN_NAME": "Domain Name",
+        "EMAIL" : "Email sent to Let's Encrypt (used for urgent renewal and security notices)",
+        "WARNING" : "To successfully request a SSL certificate, the following operations must be done first!",
+        "OP1": "This site must be accessible to Internet at port 80",
+        "OP2": "DNS record of the domain name must be resolved to the IP of this site",
+        "OP3": "You may wait for a few minutes before DNS record is propagated after you add",
+        "BUTTON_REQ" : "Request",
+        "BUTTON_CLOSE" : "Close"
     }
 }

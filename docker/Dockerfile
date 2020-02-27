@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM certbot/certbot:v1.2.0
 
 ENV USER=app_user
 ENV UID=33333

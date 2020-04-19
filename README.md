@@ -108,8 +108,9 @@ Next, install client and fill in your `domain name` / `port` / `username` / `pas
 Here are recommanded softwares :
 
 
-| Platform      | Software                                                                                                                                     | Comments                                                                                                                         |
-| ------------- |:--------------------------------------------------------------------------------------------------------------------------------------------:| ---------------------------------------------------------------------------------------------------------------------------------|
-| iOS           | ![](./doc/shadowrocket.jpg) <a href="https://apps.apple.com/us/app/shadowrocket/id932747118" target="_blank">Shadowrocket</a>                | <a href="doc/shadowrocket_1.jpg" target="_blank">Screenshot1</a>  <a href="doc/shadowrocket_2.jpg" target="_blank">Screenshot2</a> |
+| Platform        | Software                                                                                                                                     | Comments                                                                                                                         |
+|-----------------|:--------------------------------------------------------------------------------------------------------------------------------------------:| ---------------------------------------------------------------------------------------------------------------------------------|
+| iOS             | <a href="https://apps.apple.com/us/app/shadowrocket/id932747118" target="_blank">Shadowrocket</a>                                            | Shadowrocket is a rule based proxy utility for iOS. <a href="doc/shadowrocket_1.jpg" target="_blank">Screenshot1</a>  <a href="doc/shadowrocket_2.jpg" target="_blank">Screenshot2</a> |
+| Firefox Browser | <a href="https://addons.mozilla.org/en-US/firefox/addon/switchyomega-for-vproxy/" target="_blank">Shadowrocket for VProxy</a>                | Shadowrocket for VProxy is an addon for Firefox web browser. <a href="doc/switchyomega.jpg" target="_blank">Screenshot</a>                                                          |
 
 _To be continued_

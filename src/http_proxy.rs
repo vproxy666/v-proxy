@@ -84,7 +84,11 @@ pub async fn handle(req: Request<Body>, _client_addr : SocketAddr) -> Result<Res
 
 // Create a TCP connection to host:port, build a tunnel between the connection and
 // the upgraded connection
-async fn tunnel(upgraded: Upgraded, addr: String) -> std::io::Result<()> {
+async fn tunnel(upgraded: Upgraded, mut addr: String) -> std::io::Result<()> {
+
+    if addr.find(':').is_none() {
+        addr.push_str(":80");
+    }
     // Connect to remote server
     let mut server = TcpStream::connect(addr).await?;
 

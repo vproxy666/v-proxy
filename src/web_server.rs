@@ -37,6 +37,8 @@ pub async fn set_root(web_root : &str, challende_root : &str) {
 pub fn url_rewrite( req: &mut Request<Body>) -> bool {
 
     if req.uri().authority().is_none()  { // if authority is None, it is not an HTTP proxy request
+
+
         if let Some(path_and_query) = req.uri().path_and_query() {
             let path_and_query = path_and_query.as_str();
             let backend_path = config::get_console_path();
@@ -93,8 +95,8 @@ pub async fn handle(req: Request<Body>, client_addr : SocketAddr) -> Result<Resp
             return Ok(resp);
         }
     };
-
     
+   
     if url_path.starts_with(API_PATH) {
         return api_server::handle(req, client_addr).await;
     }

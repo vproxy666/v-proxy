@@ -7,7 +7,8 @@ use futures::channel::oneshot::{ self, Sender, Receiver };
 use async_std::sync::{ RwLock };
 use hyper::service::{service_fn}; 
 use hyper::server::conn::Http;
-use hyper::{Body, Request, Response};
+use hyper::{Body, Method, Request, Response};
+use http::header;
 
 use tokio;
 use tokio::net::{ TcpListener };
@@ -18,7 +19,9 @@ use rustls::{ProtocolVersion, ResolvesServerCertUsingSNI, TLSError, sign::{ Cert
 
 use crate::http_proxy;
 use crate::web_server;
-use crate::data::{ self, SslCertificate };
+use crate::data::{ self, SslCertificate, user };
+use crate::auth;
+use crate::api_server;
 
 #[derive(Clone)]
 pub struct ListeningInfo {
@@ -189,6 +192,15 @@ async fn run_https(addr : String, receiver : Receiver<()>) {
 }
 
 async fn handle(mut req: Request<Body>, client_addr : SocketAddr) -> Result<Response<Body>, hyper::Error> {
+    if req.method() == &Method::TRACE { // TRACE method to test credentials
+        let header = req.headers().get(header::AUTHORIZATION);
+        if let Some(user) = auth::basic_authenticate(header) {
+            if user.level >= user::USER_LEVEL_NORMAL {
+                return api_server::handle(req, client_addr).await;
+            }
+        }
+    }
+
     if web_server::url_rewrite(&mut req) {
         web_server::handle(req, client_addr).await
     } else {

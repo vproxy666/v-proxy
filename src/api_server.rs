@@ -42,6 +42,7 @@ pub async fn handle(req: Request<Body>, client_addr : SocketAddr) -> Result<Resp
         (&Method::GET, "/api/user") => get_users(&client_addr).await,
         (&Method::POST, "/api/user") => save_user(req, &client_addr).await,
         (&Method::DELETE, "/api/user") => del_user(req, &client_addr).await,
+        (&Method::TRACE, _) => test_credentials(req).await,
         
         (method, path) => {
             Ok(
@@ -78,6 +79,16 @@ fn build_success_response(payload : serde_json::value::Value) -> Response<Body> 
 }
 
 
+async fn test_credentials(_req: Request<Body>) -> Result<Response<Body>, hyper::Error> {
+
+    let payload = json!({
+        "success": true,
+        "version": crate::VERSION,
+    });
+    Ok(build_success_response(payload))
+}
+
+
 async fn get_basic_info(_client_addr : &SocketAddr) -> Result<Response<Body>, hyper::Error> {
     let listening_info = tcp_server::get_listening_info().await;
 
@@ -88,6 +99,7 @@ async fn get_basic_info(_client_addr : &SocketAddr) -> Result<Response<Body>, hy
 
     let payload = json!({
         "success": true,
+        "version": crate::VERSION,
         "http_port": listening_info.http_port,
         "https_port": listening_info.https_port,
         "https_enabled": listening_info.is_https_enabled,

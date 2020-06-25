@@ -54,7 +54,7 @@ sudo docker run -d \
   --name vproxy \
   --network host \
   --restart=always \
-  -v vproxy-data:/app/data/:rw \ 
+  -v vproxy-data:/app/data/:rw \
   -v vproxy-data:/etc/letsencrypt:rw \
   -v vproxy-data:/var/lib/letsencrypt:rw \
   --cap-add net_bind_service \

@@ -4,7 +4,8 @@
 ## Prerequisites
 
 * Rust & Cargo on Ubuntu
-* `sudo apt install docker.io mingw-w64 musl-tools`
+* Docker CE v19+
+* `sudo apt install binfmt-support qemu-user-static mingw-w64 musl-tools`
 * `sudo usermod -a -G docker $USER` (Relogin SSH terminal is required)
 * `sudo systemctl start docker`
 * `cargo install cross`
@@ -40,4 +41,9 @@ cross +stable build --target x86_64-unknown-linux-gnu --release
 # Build for Alpine Linux x64
 ```
 cross +stable build --target x86_64-unknown-linux-musl --release
+```
+
+# Build for Alpine Linux ARM64
+```
+cross +stable build --target aarch64-unknown-linux-musl --release
 ```

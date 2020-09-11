@@ -4,7 +4,7 @@
 
 VProxy works as a reverse proxy in common cases to pretend as an HTTPS web site.
 Only when VProxy receives HTTP/1.1 proxy request whose credential is valid, it handles that request as an HTTPS forward proxy.
-The traffic is encrypted by TLS hence client is unable to detect there is an HTTPS proxy running without supplying correct credentials.
+The traffic is encrypted by TLS hence HTTPS proxy is disguised an HTTPS web site.
 
 ## Features
 
@@ -20,13 +20,19 @@ The traffic is encrypted by TLS hence client is unable to detect there is an HTT
 
 ### Step 0. Prerequisites
 
-A domain name is required to setup HTTPS.
+A domain name is required to setup HTTPS.  The domain name must be resolved to Internet IP address of the server you are going to setup.
 
 ### Step 1. Deployment
 
-It is recommended to deploy VProxy as docker container. The docker image inherits from Let's Encyprt [certbot](https://hub.docker.com/r/certbot/certbot) to request free SSL certificate.
+V-Proxy server is provided as docker images at [DockerHub](https://hub.docker.com/repository/docker/vproxy/server).
 
-First create a data volume
+The following OS/architectures are supported by docker images.
+
+* `linux/amd64`
+* `linux/arm64`
+* `linux/armv7`
+
+To deploy VProxy as docker container, first create a data volume
 ```bash
 sudo docker volume create --name vproxy-data
 ```
@@ -38,7 +44,6 @@ sudo docker run -it --name vproxy --network host -v vproxy-data:/app/data/:rw -v
 
 * Volume `/app/data/` hosts application data of vproxy
 * Volumes `/etc/letsencrypt` and `/var/lib/letsencrypt` are required by [certbot](https://hub.docker.com/r/certbot/certbot) to store certificates.
-
 
 
 Certainly the container can be started as Linux daemon. Here is a full example
@@ -113,4 +118,3 @@ Here are recommanded softwares :
 | iOS             | <a href="https://apps.apple.com/us/app/shadowrocket/id932747118" target="_blank">Shadowrocket</a>                                            | Shadowrocket is a rule based proxy utility for iOS. <a href="doc/shadowrocket_1.jpg" target="_blank">Screenshot1</a>  <a href="doc/shadowrocket_2.jpg" target="_blank">Screenshot2</a> |
 | Firefox Browser | <a href="https://addons.mozilla.org/en-US/firefox/addon/switchyomega-for-vproxy/" target="_blank">SwitchyOmega for VProxy</a>                | SwitchyOmega for VProxy is an addon for Firefox web browser. <a href="doc/switchyomega.jpg" target="_blank">Screenshot</a>                                                          |
 
-_To be continued_

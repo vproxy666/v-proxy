@@ -1,4 +1,4 @@
-FROM certbot/certbot:v1.2.0
+FROM vproxy/certbot:${TARGETARCH}-v1.8.0
 
 ENV USER=app_user
 ENV UID=33333
@@ -25,13 +25,14 @@ ENV RUST_LOG=info
 
 
 WORKDIR /app
-ADD v-proxy /app/
+ARG TARGETPLATFORM
+ADD bin/${TARGETPLATFORM}/v-proxy /app/
 VOLUME ["/app/data"]
 COPY web /app/web
 
 # Allow non-root user to bind on port lower than 1024
 RUN setcap CAP_NET_BIND_SERVICE=+eip /app/v-proxy  
-#USER app_user
+#USER app_user  # certbot image requires permissions
 
 ENTRYPOINT [ "/app/v-proxy" ]
 

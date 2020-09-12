@@ -2,14 +2,14 @@ version: 2.1
 jobs:
   x86_64-pc-windows-gnu:
     docker:
-      - image: vproxy/ci-rust:202009121114
+      - image: vproxy/ci-rust:202009121203
     steps:
       - checkout
       - run: cargo build --target x86_64-pc-windows-gnu --release; 
-      - run: mkdir -p ./bin; cp -r ./docker/web ./bin/; cp target/x86_64-pc-windows-gnu/release/v-proxy.exe ./bin
+      - run: mkdir -p ./bin; cp -r ./docker/web ./bin/; cp target/x86_64-pc-windows-gnu/release/v-proxy.exe ./bin; zip -r bin.zip bin/*
       - store_artifacts:
-          path: bin/
-          destination: x86_64-pc-windows-gnu
+          path: bin.zip
+          destination: x86_64-pc-windows-gnu.zip
 workflows:
   version: 2
   build:

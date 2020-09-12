@@ -1,16 +1,14 @@
 version: 2.1
 jobs:
-  build:
+  build_windows:
     docker:
       - image: vproxy/ci-rust:202009121114
     steps:
-      # command will execute in trusty container
-      # and can access mongo on localhost
       - checkout
       - run: cargo build --target x86_64-pc-windows-gnu --release; 
-      - run: mkdir -p ./bin; cp target/x86_64-pc-windows-gnu/release/v-proxy.exe ./bin
-
+      - run: mkdir -p ./bin; cp -r ./docker/web ./bin/; cp target/x86_64-pc-windows-gnu/release/v-proxy.exe ./bin
       - store_artifacts:
           path: bin/
+          destination: x86_64-pc-windows-gnu
 
 

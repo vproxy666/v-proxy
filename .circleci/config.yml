@@ -7,4 +7,4 @@ jobs:
       # command will execute in trusty container
       # and can access mongo on localhost
       - checkout
-      - run: cross +stable build --target x86_64-pc-windows-gnu --release
+      - run: cargo build --target x86_64-pc-windows-gnu --release

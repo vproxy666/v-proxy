@@ -5,6 +5,7 @@ jobs:
       - image: vproxy/ci-rust:202009121423
     steps:
       - checkout
+      - run: source $HOME/.cargo/env
       - run: cross build --target x86_64-pc-windows-gnu --release; 
       - run:
           name: "Create Artifacts Package"
@@ -24,6 +25,7 @@ jobs:
       - image: vproxy/ci-rust:202009121423
     steps:
       - checkout
+      - run: source $HOME/.cargo/env
       - run: cross build --target x86_64-unknown-linux-gnu --release; 
       - run:
           name: "Create Artifacts Package"

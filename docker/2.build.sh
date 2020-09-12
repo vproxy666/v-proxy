@@ -38,7 +38,4 @@ docker buildx build -t $IMAGE_URI --platform linux/amd64,linux/arm/v7,linux/arm6
 
 # if you see error "auto-push is currently not implemented for docker driver"
 # Run : docker buildx create --use
-
-
-docker image tag $IMAGE_URI vproxy/server:latest
-docker push vproxy/server:latest
+#docker buildx build -t vproxy/server:latest --platform linux/amd64,linux/arm/v7,linux/arm64/v8 --push .

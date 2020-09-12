@@ -10,6 +10,6 @@ jobs:
       - run: cargo build --target x86_64-pc-windows-gnu --release --out-dir /tmp/x86_64-pc-windows-gnu/
 
       - store_artifacts:
-        path: /tmp/x86_64-pc-windows-gnu/
+          path: /tmp/x86_64-pc-windows-gnu/
 
 

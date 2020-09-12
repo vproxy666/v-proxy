@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   x86_64-pc-windows-gnu:
     docker:
-      - image: vproxy/ci-rust:202009121450
+      - image: vproxy/ci-rust:202009121459
     steps:
       - checkout
       - run: cross build --target x86_64-pc-windows-gnu --release; 
@@ -21,7 +21,7 @@ jobs:
 
   x86_64-unknown-linux-gnu:
     docker:
-      - image: vproxy/ci-rust:202009121450
+      - image: vproxy/ci-rust:202009121459
     steps:
       - checkout
       - run: cross build --target x86_64-unknown-linux-gnu --release; 

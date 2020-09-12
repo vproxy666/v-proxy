@@ -1,0 +1,4 @@
+[submodule "skeleton"]
+	path = web-ui
+	url = ../web-ui.git
+

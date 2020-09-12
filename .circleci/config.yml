@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: vproxy/ci-rust:202009121107
+      - image: vproxy/ci-rust:202009121114
     steps:
       # command will execute in trusty container
       # and can access mongo on localhost

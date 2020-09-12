@@ -2,10 +2,10 @@ version: 2.1
 jobs:
   x86_64-pc-windows-gnu:
     docker:
-      - image: vproxy/ci-rust:202009121203
+      - image: vproxy/ci-rust:202009121423
     steps:
       - checkout
-      - run: cargo build --target x86_64-pc-windows-gnu --release; 
+      - run: cross build --target x86_64-pc-windows-gnu --release; 
       - run:
           name: "Create Artifacts Package"
           command: |
@@ -17,31 +17,14 @@ jobs:
       - store_artifacts:
           path: x86_64-pc-windows-gnu.zip
           destination: x86_64-pc-windows-gnu.zip
-
-  x86_64-apple-darwin:
-    docker:
-      - image: vproxy/ci-rust:202009121203
-    steps:
-      - checkout
-      - run: cargo build --target x86_64-apple-darwin --release; 
-      - run:
-          name: "Create Artifacts Package"
-          command: |
-            mkdir -p ./bin;
-            cp -r ./docker/web ./bin/;
-            cp target/x86_64-apple-darwin/release/v-proxy ./bin;
-            zip -r x86_64-apple-darwin.zip bin/*;
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -replace 0.2.8 ./x86_64-apple-darwin.zip
-      - store_artifacts:
-          path: x86_64-apple-darwin.zip
-          destination: x86_64-apple-darwin.zip
+ 
 
   x86_64-unknown-linux-gnu:
     docker:
-      - image: vproxy/ci-rust:202009121203
+      - image: vproxy/ci-rust:202009121423
     steps:
       - checkout
-      - run: cargo build --target x86_64-unknown-linux-gnu --release; 
+      - run: cross build --target x86_64-unknown-linux-gnu --release; 
       - run:
           name: "Create Artifacts Package"
           command: |
@@ -57,7 +40,6 @@ workflows:
   version: 2
   build:
       jobs:
-          - x86_64-apple-darwin
           - x86_64-pc-windows-gnu
           - x86_64-unknown-linux-gnu
 

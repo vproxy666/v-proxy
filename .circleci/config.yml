@@ -2,10 +2,10 @@ version: 2.1
 jobs:
   x86_64-pc-windows-gnu:
     docker:
-      - image: vproxy/ci-rust:202009121459
+      - image: vproxy/ci-rust:202009122350
     steps:
       - checkout
-      - run: cross build --target x86_64-pc-windows-gnu --release; 
+      - run: cargo build --target x86_64-pc-windows-gnu --release; 
       - run:
           name: "Create Artifacts Package"
           command: |
@@ -13,7 +13,7 @@ jobs:
             cp -r ./docker/web ./bin/;
             cp target/x86_64-pc-windows-gnu/release/v-proxy.exe ./bin;
             zip -r x86_64-pc-windows-gnu.zip bin/*;
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -replace 0.2.8 ./x86_64-pc-windows-gnu.zip
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -prerelease -replace $CIRCLE_BRANCH ./x86_64-pc-windows-gnu.zip
       - store_artifacts:
           path: x86_64-pc-windows-gnu.zip
           destination: x86_64-pc-windows-gnu.zip
@@ -21,10 +21,10 @@ jobs:
 
   x86_64-unknown-linux-gnu:
     docker:
-      - image: vproxy/ci-rust:202009121459
+      - image: vproxy/ci-rust:202009122350
     steps:
       - checkout
-      - run: cross build --target x86_64-unknown-linux-gnu --release; 
+      - run: cargo build --target x86_64-unknown-linux-gnu --release; 
       - run:
           name: "Create Artifacts Package"
           command: |
@@ -32,7 +32,7 @@ jobs:
             cp -r ./docker/web ./bin/;
             cp target/x86_64-unknown-linux-gnu/release/v-proxy ./bin;
             tar -czvf x86_64-unknown-linux-gnu.tar.gz bin/*;
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -replace 0.2.8 ./x86_64-unknown-linux-gnu.tar.gz
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -prerelease -replace $CIRCLE_BRANCH ./x86_64-unknown-linux-gnu.tar.gz
       - store_artifacts:
           path: x86_64-unknown-linux-gnu.tar.gz
           destination: x86_64-unknown-linux-gnu.tar.gz

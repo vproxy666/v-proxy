@@ -3,4 +3,9 @@ jobs:
   build:
     docker:
       - image: vproxy/ci-rust:202009120931
-        command: [--smallfiles]
+    steps:
+      # command will execute in trusty container
+      # and can access mongo on localhost
+      - run: ls
+      - run: pwd
+      - run: printenv

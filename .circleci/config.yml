@@ -6,9 +6,16 @@ jobs:
     steps:
       - checkout
       - run: cargo build --target x86_64-pc-windows-gnu --release; 
-      - run: mkdir -p ./bin; cp -r ./docker/web ./bin/; cp target/x86_64-pc-windows-gnu/release/v-proxy.exe ./bin; zip -r bin.zip bin/*
+      - run:
+        name: "Create Artifacts Package"
+        command: |
+          mkdir -p ./bin;
+          cp -r ./docker/web ./bin/;
+          cp target/x86_64-pc-windows-gnu/release/v-proxy.exe ./bin;
+          zip -r x86_64-pc-windows-gnu.zip bin/*;
+          ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete 0.2.8 ./x86_64-pc-windows-gnu.zip
       - store_artifacts:
-          path: bin.zip
+          path: x86_64-pc-windows-gnu.zip
           destination: x86_64-pc-windows-gnu.zip
 workflows:
   version: 2

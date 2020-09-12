@@ -6,6 +6,7 @@ jobs:
     steps:
       # command will execute in trusty container
       # and can access mongo on localhost
+      - checkout
       - run: ls
       - run: pwd
       - run: printenv

@@ -7,9 +7,10 @@ jobs:
       # command will execute in trusty container
       # and can access mongo on localhost
       - checkout
-      - run: cargo build --target x86_64-pc-windows-gnu --release --out-dir /tmp/x86_64-pc-windows-gnu/
+      - run: cargo build --target x86_64-pc-windows-gnu --release; 
+      - run: mkdir -p ./bin; cp target/x86_64-pc-windows-gnu/release/v-proxy.exe ./bin
 
       - store_artifacts:
-          path: /tmp/x86_64-pc-windows-gnu/
+          path: bin/
 
 

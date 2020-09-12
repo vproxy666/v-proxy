@@ -1,13 +1,6 @@
 version: 2.1
 jobs:
   build:
-    machine:
-      image: ubuntu-1604:202007-01
-    steps:
-      - checkout
-      - run:
-          name: "List"
-          command: ls
-      - run:
-          name: "printenv"
-          command: printenv
+    docker:
+      - image: vproxy/ci-rust:202009120931
+        command: [--smallfiles]

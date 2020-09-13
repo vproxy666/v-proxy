@@ -57,6 +57,7 @@ jobs:
           name: "Build Docker Image"
           command: |
             sudo bash -c "printf '{ \"experimental\": true }' > /etc/docker/daemon.json";
+            mkdir -p $HOME/.docker;
             printf '{ "experimental": "enabled" }' > $HOME/.docker/config.json;
             sudo systemctl start docker;
             DOCKER_CLI_EXPERIMENTAL=enabled;

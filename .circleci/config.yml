@@ -46,9 +46,9 @@ jobs:
       - run:
           name: "Install Rust/Cargo/Cross"
           command: |
-            apt-get update -y;
-            apt-get install -y build-essential binfmt-support qemu-user-static musl-tools curl wget iptables xz-utils btrfs-progs;
-            apt-get clean;
+            sudo apt-get update -y;
+            sudo apt-get install -y build-essential binfmt-support qemu-user-static musl-tools curl wget iptables xz-utils btrfs-progs;
+            sudo apt-get clean;
             curl -o ./rustup-init https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init && \
             chmod +x /rustup-init;
             /rustup-init -y;

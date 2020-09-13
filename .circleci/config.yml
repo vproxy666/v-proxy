@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   x86_64-pc-windows-gnu:
     docker:
-      - image: vproxy/ci-rust:202009122350
+      - image: vproxy/ci-rust:202009130001
     steps:
       - checkout
       - run: cargo build --target x86_64-pc-windows-gnu --release; 
@@ -21,7 +21,7 @@ jobs:
 
   x86_64-unknown-linux-gnu:
     docker:
-      - image: vproxy/ci-rust:202009122350
+      - image: vproxy/ci-rust:202009130001
     steps:
       - checkout
       - run: cargo build --target x86_64-unknown-linux-gnu --release; 
@@ -36,11 +36,23 @@ jobs:
       - store_artifacts:
           path: x86_64-unknown-linux-gnu.tar.gz
           destination: x86_64-unknown-linux-gnu.tar.gz
+
+  deploy:
+    docker:
+      - image: vproxy/ci-rust:202009130001
+    steps:
+      - ls
 workflows:
   version: 2
-  build:
-      jobs:
-          - x86_64-pc-windows-gnu
-          - x86_64-unknown-linux-gnu
+  build-and-deploy:
+    jobs:
+      - x86_64-pc-windows-gnu
+      - x86_64-unknown-linux-gnu
+      - deploy:
+          requires:
+            - x86_64-pc-windows-gnu
+            - x86_64-unknown-linux-gnu
+
+
 
 

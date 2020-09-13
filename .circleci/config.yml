@@ -55,7 +55,7 @@ jobs:
             rm -f /rustup-init;
             source $HOME/.cargo/env;
             cargo install cross;
-      - run: $HOME/.cargo/bin/cross build --target armv7-unknown-linux-musleabihf --release; 
+      - run: source $HOME/.cargo/env; cross build --target armv7-unknown-linux-musleabihf --release; 
       - run:
           name: "Create Artifacts Package"
           command: |

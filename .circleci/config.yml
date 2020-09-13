@@ -56,7 +56,25 @@ jobs:
           paths:
             - armv7-unknown-linux-musleabihf.tar.gz
             - armv7-unknown-linux-musleabihf/
-    
+  
+  aarch64-unknown-linux-musl:
+    docker:
+      - image: vproxy/ci-rust:202009130603
+    steps:
+      - checkout
+      - run: cargo build --target aarch64-unknown-linux-musl --release; 
+      - run:
+          name: "Create Artifacts Package"
+          command: |
+            mkdir -p docker/bin/aarch64-unknown-linux-musl;
+            cp -r ./docker/web docker/bin/aarch64-unknown-linux-musl/;
+            cp target/aarch64-unknown-linux-musl/release/v-proxy docker/bin/aarch64-unknown-linux-musl/;
+            tar -czvf docker/bin/aarch64-unknown-linux-musl.tar.gz docker/bin/aarch64-unknown-linux-musl/*;
+      - persist_to_workspace:
+          root: docker/bin
+          paths:
+            - aarch64-unknown-linux-musl.tar.gz
+            - aarch64-unknown-linux-musl/
 
   deploy:
     docker:

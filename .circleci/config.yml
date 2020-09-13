@@ -9,7 +9,7 @@ jobs:
           name: "Install Rust/Cargo/Cross"
           command: |
             sudo apt-get update -y;
-            sudo apt-get install -y build-essential binfmt-support qemu-user-static musl-tools curl wget iptables xz-utils btrfs-progs;
+            sudo apt-get install -y build-essential binfmt-support qemu-user-static musl-tools curl wget mingw-w64 parallel;
             sudo apt-get clean;
             curl -o ./rustup-init https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init && \
             chmod +x ./rustup-init;
@@ -26,14 +26,50 @@ jobs:
             cp -r ./docker/web docker/bin/armv7-unknown-linux-musleabihf/;
             cp target/armv7-unknown-linux-musleabihf/release/v-proxy docker/bin/armv7-unknown-linux-musleabihf/;
             tar -czvf docker/bin/armv7-unknown-linux-musleabihf.tar.gz docker/bin/armv7-unknown-linux-musleabihf/*;
-      - persist_to_workspace:
-          root: docker/bin
-          paths:
-            - armv7-unknown-linux-musleabihf.tar.gz
-            - armv7-unknown-linux-musleabihf/
-  
-
-
+      - store_artifacts:
+          path: docker/bin/armv7-unknown-linux-musleabihf.tar.gz
+          destination: armv7-unknown-linux-musleabihf.tar.gz
+      - run:
+          name: "Build for aarch64-unknown-linux-musl"
+          command: |
+            source $HOME/.cargo/env; 
+            cross build --target aarch64-unknown-linux-musl --release; 
+            mkdir -p docker/bin/aarch64-unknown-linux-musl;
+            cp -r ./docker/web docker/bin/aarch64-unknown-linux-musl/;
+            cp target/aarch64-unknown-linux-musl/release/v-proxy docker/bin/aarch64-unknown-linux-musl/;
+            tar -czvf docker/bin/aarch64-unknown-linux-musl.tar.gz docker/bin/aarch64-unknown-linux-musl/*;
+      - store_artifacts:
+          path: docker/bin/aarch64-unknown-linux-musl.tar.gz
+          destination: aarch64-unknown-linux-musl.tar.gz
+      - run:
+          name: "Build for x86_64-unknown-linux-musl"
+          command: |
+            source $HOME/.cargo/env; 
+            cross build --target x86_64-unknown-linux-musl --release; 
+            mkdir -p docker/bin/x86_64-unknown-linux-musl;
+            cp -r ./docker/web docker/bin/x86_64-unknown-linux-musl/;
+            cp target/x86_64-unknown-linux-musl/release/v-proxy docker/bin/x86_64-unknown-linux-musl/;
+            tar -czvf docker/bin/x86_64-unknown-linux-musl.tar.gz docker/bin/x86_64-unknown-linux-musl/*;
+      - store_artifacts:
+          path: docker/bin/x86_64-unknown-linux-musl.tar.gz
+          destination: x86_64-unknown-linux-musl.tar.gz
+      - run:
+          name: "Build Docker Image"
+          command: |
+            printf '{ "experimental": true }' > /etc/docker/daemon.json;
+            printf '{ "experimental": "enabled" }' > $HOME/.docker/config.json;
+            sudo systemctl start docker;
+            DOCKER_CLI_EXPERIMENTAL=enabled;
+            sudo docker version;
+            sudo docker buildx create --use;
+            mkdir -p docker/bin/linux/arm/v7;
+            mkdir -p docker/bin/linux/arm64;
+            mkdir -p docker/bin/linux/amd64;
+            cp -f target/armv7-unknown-linux-musleabihf/release/v-proxy docker/bin/linux/arm/v7/v-proxy;
+            cp -f target/aarch64-unknown-linux-musl/release/v-proxy docker/bin/linux/arm64/v-proxy;
+            cp -f target/x86_64-unknown-linux-musl/release/v-proxy docker/bin/linux/amd64/v-proxy;
+            cd docker;
+            sudo docker buildx build -t docker.pkg.github.com/vproxy666/${CIRCLE_PROJECT_REPONAME}/server:$CIRCLE_BRANCH --platform linux/amd64,linux/arm/v7,linux/arm64/v8 --push .
   deploy:
     docker:
       - image: vproxy/ci-rust:202009130603
@@ -41,7 +77,6 @@ jobs:
       - checkout
       - attach_workspace:
           at: docker/bin
-      - run: dockerd
       - run: ls docker/bin; ls armv7-unknown-linux-musleabihf/
 workflows:
   version: 2

@@ -39,11 +39,23 @@ jobs:
             - x86_64-unknown-linux-gnu/
 
   armv7-unknown-linux-musleabihf:
-    docker:
-      - image: vproxy/ci-rust:202009130603
+    machine:
+      image: ubuntu-1604:202007-01
     steps:
       - checkout
-      - run: /usr/local/bin/dind; cross build --target armv7-unknown-linux-musleabihf --release; 
+      - run:
+          name: "Install Rust/Cargo/Cross"
+          command: |
+            apt-get update -y;
+            apt-get install -y build-essential binfmt-support qemu-user-static musl-tools curl wget iptables xz-utils btrfs-progs;
+            apt-get clean;
+            curl -o ./rustup-init https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init && \
+            chmod +x /rustup-init;
+            /rustup-init -y;
+            rm -f /rustup-init;
+            source $HOME/.cargo/env;
+            cargo install cross;
+      - run: $HOME/.cargo/bin/cross build --target armv7-unknown-linux-musleabihf --release; 
       - run:
           name: "Create Artifacts Package"
           command: |

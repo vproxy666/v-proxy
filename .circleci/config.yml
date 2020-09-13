@@ -9,20 +9,15 @@ jobs:
       - run:
           name: "Create Artifacts Package"
           command: |
-            mkdir -p ./bin; mkdir -p docker/bin;
-            cp -r ./docker/web ./bin/;
-            cp target/x86_64-pc-windows-gnu/release/v-proxy.exe ./bin;
-            cp target/x86_64-pc-windows-gnu/release/v-proxy.exe docker/bin/x86_64-pc-windows-gnu.exe;
-            zip -r x86_64-pc-windows-gnu.zip bin/*;
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -prerelease -replace $CIRCLE_BRANCH ./x86_64-pc-windows-gnu.zip
+            mkdir -p docker/bin/x86_64-pc-windows-gnu;
+            cp -r ./docker/web docker/bin/x86_64-pc-windows-gnu/;
+            cp target/x86_64-pc-windows-gnu/release/v-proxy.exe docker/bin/x86_64-pc-windows-gnu/;
+            zip -r docker/bin/x86_64-pc-windows-gnu.zip docker/bin/x86_64-pc-windows-gnu/*;
       - persist_to_workspace:
           root: docker/bin
           paths:
-            - x86_64-pc-windows-gnu.exe
-      - store_artifacts:
-          path: x86_64-pc-windows-gnu.zip
-          destination: x86_64-pc-windows-gnu.zip
- 
+            - x86_64-pc-windows-gnu.zip
+            - x86_64-pc-windows-gnu/
 
   x86_64-unknown-linux-gnu:
     docker:
@@ -33,19 +28,35 @@ jobs:
       - run:
           name: "Create Artifacts Package"
           command: |
-            mkdir -p ./bin;
-            cp -r ./docker/web ./bin/; mkdir -p docker/bin;
-            cp target/x86_64-unknown-linux-gnu/release/v-proxy ./bin;
-            cp target/x86_64-unknown-linux-gnu/release/v-proxy docker/bin/x86_64-unknown-linux-gnu;
-            tar -czvf x86_64-unknown-linux-gnu.tar.gz bin/*;
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -prerelease -replace $CIRCLE_BRANCH ./x86_64-unknown-linux-gnu.tar.gz
-      - store_artifacts:
-          path: x86_64-unknown-linux-gnu.tar.gz
-          destination: x86_64-unknown-linux-gnu.tar.gz
+          mkdir -p docker/bin/x86_64-unknown-linux-gnu;
+          cp -r ./docker/web docker/bin/x86_64-unknown-linux-gnu/;
+          cp target/x86_64-unknown-linux-gnu/release/v-proxy.exe docker/bin/x86_64-unknown-linux-gnu/;
+          tar -czvf docker/bin/x86_64-unknown-linux-gnu.tar.gz docker/bin/x86_64-unknown-linux-gnu/*;
       - persist_to_workspace:
           root: docker/bin
           paths:
-            - x86_64-unknown-linux-gnu
+            - x86_64-unknown-linux-gnu.tar.gz
+            - x86_64-unknown-linux-gnu/
+
+  armv7-unknown-linux-musleabihf:
+    docker:
+      - image: vproxy/ci-rust:202009130603
+    steps:
+      - checkout
+      - run: cargo build --target x86_64-unknown-linux-gnu --release; 
+      - run:
+          name: "Create Artifacts Package"
+          command: |
+          mkdir -p docker/bin/armv7-unknown-linux-musleabihf;
+          cp -r ./docker/web docker/bin/armv7-unknown-linux-musleabihf/;
+          cp target/armv7-unknown-linux-musleabihf/release/v-proxy.exe docker/bin/armv7-unknown-linux-musleabihf/;
+          tar -czvf docker/bin/armv7-unknown-linux-musleabihf.tar.gz docker/bin/armv7-unknown-linux-musleabihf/*;
+      - persist_to_workspace:
+          root: docker/bin
+          paths:
+            - armv7-unknown-linux-musleabihf.tar.gz
+            - armv7-unknown-linux-musleabihf/
+    
 
   deploy:
     docker:
@@ -53,8 +64,7 @@ jobs:
     steps:
       - attach_workspace:
           at: docker/bin
-      - run: ls docker/bin
-      - run: sudo docker version
+      - run: ls docker/bin; ls armv7-unknown-linux-musleabihf/
 workflows:
   version: 2
   build-and-deploy:
@@ -65,6 +75,7 @@ workflows:
           requires:
             - x86_64-pc-windows-gnu
             - x86_64-unknown-linux-gnu
+            - armv7-unknown-linux-musleabihf
 
 
 

@@ -12,9 +12,9 @@ jobs:
             sudo apt-get install -y build-essential binfmt-support qemu-user-static musl-tools curl wget iptables xz-utils btrfs-progs;
             sudo apt-get clean;
             curl -o ./rustup-init https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init && \
-            chmod +x /rustup-init;
-            /rustup-init -y;
-            rm -f /rustup-init;
+            chmod +x ./rustup-init;
+            ./rustup-init -y;
+            rm -f ./rustup-init;
             source $HOME/.cargo/env;
             cargo install cross;
       - run:

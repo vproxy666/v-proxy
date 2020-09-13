@@ -62,6 +62,7 @@ jobs:
     docker:
       - image: vproxy/ci-rust:202009130603
     steps:
+      - checkout
       - attach_workspace:
           at: docker/bin
       - run: ls docker/bin; ls armv7-unknown-linux-musleabihf/

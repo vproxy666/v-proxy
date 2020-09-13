@@ -2,18 +2,23 @@ version: 2.1
 jobs:
   x86_64-pc-windows-gnu:
     docker:
-      - image: vproxy/ci-rust:202009130551
+      - image: vproxy/ci-rust:202009130603
     steps:
       - checkout
       - run: cargo build --target x86_64-pc-windows-gnu --release; 
       - run:
           name: "Create Artifacts Package"
           command: |
-            mkdir -p ./bin;
+            mkdir -p ./bin; mkdir -p docker/bin;
             cp -r ./docker/web ./bin/;
             cp target/x86_64-pc-windows-gnu/release/v-proxy.exe ./bin;
+            cp target/x86_64-pc-windows-gnu/release/v-proxy.exe docker/bin/x86_64-pc-windows-gnu.exe;
             zip -r x86_64-pc-windows-gnu.zip bin/*;
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -prerelease -replace $CIRCLE_BRANCH ./x86_64-pc-windows-gnu.zip
+      - persist_to_workspace:
+        root: docker/bin
+        paths:
+          - x86_64-pc-windows-gnu.exe
       - store_artifacts:
           path: x86_64-pc-windows-gnu.zip
           destination: x86_64-pc-windows-gnu.zip
@@ -21,7 +26,7 @@ jobs:
 
   x86_64-unknown-linux-gnu:
     docker:
-      - image: vproxy/ci-rust:202009130551
+      - image: vproxy/ci-rust:202009130603
     steps:
       - checkout
       - run: cargo build --target x86_64-unknown-linux-gnu --release; 
@@ -29,19 +34,26 @@ jobs:
           name: "Create Artifacts Package"
           command: |
             mkdir -p ./bin;
-            cp -r ./docker/web ./bin/;
+            cp -r ./docker/web ./bin/; mkdir -p docker/bin;
             cp target/x86_64-unknown-linux-gnu/release/v-proxy ./bin;
+            cp target/x86_64-unknown-linux-gnu/release/v-proxy docker/bin/x86_64-unknown-linux-gnu;
             tar -czvf x86_64-unknown-linux-gnu.tar.gz bin/*;
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -prerelease -replace $CIRCLE_BRANCH ./x86_64-unknown-linux-gnu.tar.gz
       - store_artifacts:
           path: x86_64-unknown-linux-gnu.tar.gz
           destination: x86_64-unknown-linux-gnu.tar.gz
+      - persist_to_workspace:
+        root: docker/bin
+        paths:
+          - x86_64-unknown-linux-gnu
 
   deploy:
     docker:
-      - image: vproxy/ci-rust:202009130551
+      - image: vproxy/ci-rust:202009130603
     steps:
-      - run: ls
+      - attach_workspace:
+          at: docker/bin
+      - run: ls docker/bin
       - run: sudo docker version
 workflows:
   version: 2

@@ -16,9 +16,9 @@ jobs:
             zip -r x86_64-pc-windows-gnu.zip bin/*;
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -prerelease -replace $CIRCLE_BRANCH ./x86_64-pc-windows-gnu.zip
       - persist_to_workspace:
-        root: docker/bin
-        paths:
-          - x86_64-pc-windows-gnu.exe
+          root: docker/bin
+          paths:
+            - x86_64-pc-windows-gnu.exe
       - store_artifacts:
           path: x86_64-pc-windows-gnu.zip
           destination: x86_64-pc-windows-gnu.zip
@@ -43,9 +43,9 @@ jobs:
           path: x86_64-unknown-linux-gnu.tar.gz
           destination: x86_64-unknown-linux-gnu.tar.gz
       - persist_to_workspace:
-        root: docker/bin
-        paths:
-          - x86_64-unknown-linux-gnu
+          root: docker/bin
+          paths:
+            - x86_64-unknown-linux-gnu
 
   deploy:
     docker:

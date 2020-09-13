@@ -41,7 +41,8 @@ jobs:
     docker:
       - image: vproxy/ci-rust:202009130551
     steps:
-      - run: docker version
+      - run: ls
+      - run: sudo docker version
 workflows:
   version: 2
   build-and-deploy:

@@ -1,44 +1,6 @@
 version: 2.1
 jobs:
-  x86_64-pc-windows-gnu:
-    docker:
-      - image: vproxy/ci-rust:202009130603
-    steps:
-      - checkout
-      - run: cargo build --target x86_64-pc-windows-gnu --release; 
-      - run:
-          name: "Create Artifacts Package"
-          command: |
-            mkdir -p docker/bin/x86_64-pc-windows-gnu;
-            cp -r ./docker/web docker/bin/x86_64-pc-windows-gnu/;
-            cp target/x86_64-pc-windows-gnu/release/v-proxy.exe docker/bin/x86_64-pc-windows-gnu/;
-            zip -r docker/bin/x86_64-pc-windows-gnu.zip docker/bin/x86_64-pc-windows-gnu/*;
-      - persist_to_workspace:
-          root: docker/bin
-          paths:
-            - x86_64-pc-windows-gnu.zip
-            - x86_64-pc-windows-gnu/
-
-  x86_64-unknown-linux-gnu:
-    docker:
-      - image: vproxy/ci-rust:202009130603
-    steps:
-      - checkout
-      - run: cargo build --target x86_64-unknown-linux-gnu --release; 
-      - run:
-          name: "Create Artifacts Package"
-          command: |
-            mkdir -p docker/bin/x86_64-unknown-linux-gnu;
-            cp -r ./docker/web docker/bin/x86_64-unknown-linux-gnu/;
-            cp target/x86_64-unknown-linux-gnu/release/v-proxy docker/bin/x86_64-unknown-linux-gnu/;
-            tar -czvf docker/bin/x86_64-unknown-linux-gnu.tar.gz docker/bin/x86_64-unknown-linux-gnu/*;
-      - persist_to_workspace:
-          root: docker/bin
-          paths:
-            - x86_64-unknown-linux-gnu.tar.gz
-            - x86_64-unknown-linux-gnu/
-
-  armv7-unknown-linux-musleabihf:
+  build:
     machine:
       image: ubuntu-1604:202007-01
     steps:
@@ -55,10 +17,11 @@ jobs:
             rm -f /rustup-init;
             source $HOME/.cargo/env;
             cargo install cross;
-      - run: source $HOME/.cargo/env; cross build --target armv7-unknown-linux-musleabihf --release; 
       - run:
-          name: "Create Artifacts Package"
+          name: "Build for armv7-unknown-linux-musleabihf"
           command: |
+            source $HOME/.cargo/env; 
+            cross build --target armv7-unknown-linux-musleabihf --release; 
             mkdir -p docker/bin/armv7-unknown-linux-musleabihf;
             cp -r ./docker/web docker/bin/armv7-unknown-linux-musleabihf/;
             cp target/armv7-unknown-linux-musleabihf/release/v-proxy docker/bin/armv7-unknown-linux-musleabihf/;
@@ -69,24 +32,7 @@ jobs:
             - armv7-unknown-linux-musleabihf.tar.gz
             - armv7-unknown-linux-musleabihf/
   
-  aarch64-unknown-linux-musl:
-    docker:
-      - image: vproxy/ci-rust:202009130603
-    steps:
-      - checkout
-      - run: sudo /usr/local/bin/dind; cross build --target aarch64-unknown-linux-musl --release; 
-      - run:
-          name: "Create Artifacts Package"
-          command: |
-            mkdir -p docker/bin/aarch64-unknown-linux-musl;
-            cp -r ./docker/web docker/bin/aarch64-unknown-linux-musl/;
-            cp target/aarch64-unknown-linux-musl/release/v-proxy docker/bin/aarch64-unknown-linux-musl/;
-            tar -czvf docker/bin/aarch64-unknown-linux-musl.tar.gz docker/bin/aarch64-unknown-linux-musl/*;
-      - persist_to_workspace:
-          root: docker/bin
-          paths:
-            - aarch64-unknown-linux-musl.tar.gz
-            - aarch64-unknown-linux-musl/
+
 
   deploy:
     docker:
@@ -101,14 +47,10 @@ workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - x86_64-pc-windows-gnu
-      - x86_64-unknown-linux-gnu
-      - armv7-unknown-linux-musleabihf
+      - build
       - deploy:
           requires:
-            - x86_64-pc-windows-gnu
-            - x86_64-unknown-linux-gnu
-            - armv7-unknown-linux-musleabihf
+            - build
 
 
 

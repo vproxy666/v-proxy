@@ -43,7 +43,7 @@ jobs:
       - image: vproxy/ci-rust:202009130603
     steps:
       - checkout
-      - run: /usr/local/bin/dind; cargo build --target armv7-unknown-linux-musleabihf --release; 
+      - run: /usr/local/bin/dind; cross build --target armv7-unknown-linux-musleabihf --release; 
       - run:
           name: "Create Artifacts Package"
           command: |
@@ -62,7 +62,7 @@ jobs:
       - image: vproxy/ci-rust:202009130603
     steps:
       - checkout
-      - run: cargo build --target aarch64-unknown-linux-musl --release; 
+      - run: /usr/local/bin/dind; cross build --target aarch64-unknown-linux-musl --release; 
       - run:
           name: "Create Artifacts Package"
           command: |

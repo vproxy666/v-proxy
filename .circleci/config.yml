@@ -28,10 +28,10 @@ jobs:
       - run:
           name: "Create Artifacts Package"
           command: |
-          mkdir -p docker/bin/x86_64-unknown-linux-gnu;
-          cp -r ./docker/web docker/bin/x86_64-unknown-linux-gnu/;
-          cp target/x86_64-unknown-linux-gnu/release/v-proxy.exe docker/bin/x86_64-unknown-linux-gnu/;
-          tar -czvf docker/bin/x86_64-unknown-linux-gnu.tar.gz docker/bin/x86_64-unknown-linux-gnu/*;
+            mkdir -p docker/bin/x86_64-unknown-linux-gnu;
+            cp -r ./docker/web docker/bin/x86_64-unknown-linux-gnu/;
+            cp target/x86_64-unknown-linux-gnu/release/v-proxy.exe docker/bin/x86_64-unknown-linux-gnu/;
+            tar -czvf docker/bin/x86_64-unknown-linux-gnu.tar.gz docker/bin/x86_64-unknown-linux-gnu/*;
       - persist_to_workspace:
           root: docker/bin
           paths:
@@ -47,10 +47,10 @@ jobs:
       - run:
           name: "Create Artifacts Package"
           command: |
-          mkdir -p docker/bin/armv7-unknown-linux-musleabihf;
-          cp -r ./docker/web docker/bin/armv7-unknown-linux-musleabihf/;
-          cp target/armv7-unknown-linux-musleabihf/release/v-proxy.exe docker/bin/armv7-unknown-linux-musleabihf/;
-          tar -czvf docker/bin/armv7-unknown-linux-musleabihf.tar.gz docker/bin/armv7-unknown-linux-musleabihf/*;
+            mkdir -p docker/bin/armv7-unknown-linux-musleabihf;
+            cp -r ./docker/web docker/bin/armv7-unknown-linux-musleabihf/;
+            cp target/armv7-unknown-linux-musleabihf/release/v-proxy.exe docker/bin/armv7-unknown-linux-musleabihf/;
+            tar -czvf docker/bin/armv7-unknown-linux-musleabihf.tar.gz docker/bin/armv7-unknown-linux-musleabihf/*;
       - persist_to_workspace:
           root: docker/bin
           paths:

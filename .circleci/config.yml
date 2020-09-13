@@ -65,6 +65,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: docker/bin
+      - run: dockerd
       - run: ls docker/bin; ls armv7-unknown-linux-musleabihf/
 workflows:
   version: 2

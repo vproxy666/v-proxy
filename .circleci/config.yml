@@ -69,6 +69,7 @@ jobs:
             cp -f target/aarch64-unknown-linux-musl/release/v-proxy docker/bin/linux/arm64/v-proxy;
             cp -f target/x86_64-unknown-linux-musl/release/v-proxy docker/bin/linux/amd64/v-proxy;
             cd docker;
+            sudo docker login docker.pkg.github.com -u vproxyci -p ${GITHUB_TOKEN} ;
             sudo docker buildx build -t docker.pkg.github.com/vproxy666/${CIRCLE_PROJECT_REPONAME}/server:$CIRCLE_BRANCH --platform linux/amd64,linux/arm/v7,linux/arm64/v8 --push .
   deploy:
     docker:

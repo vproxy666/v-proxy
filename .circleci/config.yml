@@ -72,6 +72,7 @@ workflows:
     jobs:
       - x86_64-pc-windows-gnu
       - x86_64-unknown-linux-gnu
+      - armv7-unknown-linux-musleabihf
       - deploy:
           requires:
             - x86_64-pc-windows-gnu

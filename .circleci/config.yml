@@ -59,9 +59,10 @@ jobs:
             sudo bash -c "printf '{ \"experimental\": true }' > /etc/docker/daemon.json";
             mkdir -p $HOME/.docker;
             printf '{ "experimental": "enabled" }' > $HOME/.docker/config.json;
-            sudo systemctl start docker;
+            sudo systemctl restart docker;
             DOCKER_CLI_EXPERIMENTAL=enabled;
             sudo docker version;
+            sudo docker run --rm --privileged multiarch/qemu-user-static --reset -p yes;
             sudo docker buildx create --use;
             mkdir -p docker/bin/linux/arm/v7;
             mkdir -p docker/bin/linux/arm64;

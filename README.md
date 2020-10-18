@@ -110,11 +110,38 @@ Next,create users who can use HTTPS proxy to access Internet.
 
 Next, install client and fill in your `domain name` / `port` / `username` / `password` to access. 
 
-Here are recommanded softwares :
+#### Client for iOS
 
+Install <a href="https://apps.apple.com/us/app/shadowrocket/id932747118" target="_blank">Shadowrocket</a>, which is a rule based proxy utility for iOS.
 
-| Platform        | Software                                                                                                                                     | Comments                                                                                                                         |
-|-----------------|:--------------------------------------------------------------------------------------------------------------------------------------------:| ---------------------------------------------------------------------------------------------------------------------------------|
-| iOS             | <a href="https://apps.apple.com/us/app/shadowrocket/id932747118" target="_blank">Shadowrocket</a>                                            | Shadowrocket is a rule based proxy utility for iOS. <a href="doc/shadowrocket_1.jpg" target="_blank">Screenshot1</a>  <a href="doc/shadowrocket_2.jpg" target="_blank">Screenshot2</a> |
-| Firefox Browser | <a href="https://addons.mozilla.org/en-US/firefox/addon/switchyomega-for-vproxy/" target="_blank">SwitchyOmega for VProxy</a>                | SwitchyOmega for VProxy is an addon for Firefox web browser. <a href="doc/switchyomega.jpg" target="_blank">Screenshot</a>                                                          |
+![Config](./doc/shadowrocket_1.jpg)
+
+![Config2](./doc/shadowrocket_2.jpg)
+
+#### Extension for Firefox
+
+Install <a href="https://addons.mozilla.org/en-US/firefox/addon/switchyomega-for-vproxy/" target="_blank">SwitchyOmega for VProxy</a> in Firefox.
+
+![switchyomega-Config](./doc/switchyomega.jpg)
+
+#### Windows / Linux / MacOS
+
+<a href="https://github.com/Dreamacro/clash" target="_blank">Clash</a> is a rule-based tunnel.
+One may add vproxy in its `$HOME/.config/clash/config.yaml` as below.
+
+```
+proxies:
+
+  # vproxy
+  - name: "vproxy"
+    type: http              # <-- must be http
+    server: your.domain.com # <-- your vproxy server domain 
+    port: 443               # <-- your vproxy server https port 
+    username: username      # <-- your vproxy server username
+    password: password      # <-- your vproxy server password
+    tls: true               # <-- must be true
+    skip-cert-verify: true  # <-- ignore certifications
+    # sni: custom.com
+```
+
 

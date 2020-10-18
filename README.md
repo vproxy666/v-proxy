@@ -4,7 +4,7 @@
 
 VProxy works as a reverse proxy in common cases to pretend as an HTTPS web site.
 Only when VProxy receives HTTP/1.1 proxy request whose credential is valid, it handles that request as an HTTPS forward proxy.
-The traffic is encrypted by TLS hence HTTPS proxy is disguised an HTTPS web site.
+The traffic is encrypted by TLS hence HTTPS proxy is disguised in an HTTPS web site.
 
 ## Features
 
@@ -13,7 +13,10 @@ The traffic is encrypted by TLS hence HTTPS proxy is disguised an HTTPS web site
 * **Reverse Proxy** - VProxy forwards HTTP/HTTPS requests to backend for common requests, and it is seen as a truely web site.
 * **Integrated Web Console** - Easy to configure and maintain by accessing a secure path in web browser.
 * **High Performance** - Developed with Rust, which is blazingly fast as C/C++. All network I/O operations are performed asynchronously. No garbage collector, low memory footprint, and absolutely memory-safe!
-* **Compatibility** - VProxy is compatible with most existing HTTPS proxy softwares as long as they don't rely on challenge–response authentication.
+* **Compatibility** - VProxy is compatible with existing HTTPS proxy softwares as long as they don't rely on challenge–response authentication.
+  * iOS - [Shadowrocket](#client-for-ios)
+  * Firefox - [Extension](#extension-for-firefox)
+  * Windows/Linux/MacOS/OpenWRT - [Clash](#windows--linux--macos)
 
 
 ## Quick Start
@@ -95,7 +98,7 @@ By clicking "Request" button, Let's Encrypt sends an HTTP GET request to `http:/
 Hence before requesting a new SSL certificate, the domain name must be resolved to the server's Internet IP Address.
 And the web site is accessible at port 80 to the Internet. 
 
-If everything goes ok, the new SSL certificate is instally automatically.
+If everything goes ok, the new SSL certificate is installed automatically.
 
 ![Configuration](./doc/setupssl_3_en.jpg)
 

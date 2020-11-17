@@ -35,4 +35,4 @@ RUN setcap CAP_NET_BIND_SERVICE=+eip /app/v-proxy
 #USER app_user  # certbot image requires permissions
 
 ENTRYPOINT [ "/app/v-proxy" ]
-
+CMD ["--http_port", "80", "--https_port", "443"]

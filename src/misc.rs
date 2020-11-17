@@ -1,5 +1,9 @@
 use std::net::UdpSocket;
 use std::io;
+use x509_parser::ASN1Time;
+use chrono::prelude::DateTime;
+use chrono::Utc;
+use std::time::{UNIX_EPOCH, Duration};
 
 pub fn get_local_ip() -> String {
     match get_ip_by_udp() {
@@ -32,4 +36,13 @@ pub fn get_ip_by_udp() -> io::Result<String> {
     socket.connect("8.8.8.8:34254")?;
     let local_addr = socket.local_addr()?;
     Ok(local_addr.ip().to_string())
+}
+
+pub fn convert_to_rfc3339(asn1_time : &ASN1Time) -> String {
+    // Creates a new SystemTime from the specified number of whole seconds
+    let duration = UNIX_EPOCH + Duration::from_secs(asn1_time.timestamp() as u64);
+    // Create DateTime from SystemTime
+    let datetime = DateTime::<Utc>::from(duration);
+    // Formats the combined date and time with the specified format string.
+    datetime.format("%Y-%m-%d %H:%M:%S").to_string()
 }

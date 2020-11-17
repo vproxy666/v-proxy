@@ -26,7 +26,7 @@ mod letsencrypt;
 
 use data::user::{ self, User};
 
-pub static VERSION: &str = "0.2.8";
+pub static VERSION: &str = "0.2.9";
 
 // Get dir
 pub fn get_dir(folder : &str) -> String {
@@ -72,13 +72,13 @@ async fn main() {
         .arg(clap::Arg::with_name("https_port")
             .long("https_port")
             .help("Sets listening port of HTTPS")
-            .default_value("443")
+            .default_value("10443")
             .required(false)
             .takes_value(true))
         .arg(clap::Arg::with_name("http_port")
             .long("http_port")
             .help("Sets listening port of HTTP. Set 0 to disable HTTP")
-            .default_value("80")
+            .default_value("10080")
             .required(false)
             .takes_value(true))
         .arg(clap::Arg::with_name("root_default_pwd")

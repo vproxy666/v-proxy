@@ -26,7 +26,7 @@ mod letsencrypt;
 
 use data::user::{ self, User};
 
-pub static VERSION: &str = "0.2.8";
+pub static VERSION: &str = "0.2.9";
 
 // Get dir
 pub fn get_dir(folder : &str) -> String {

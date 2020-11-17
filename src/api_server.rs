@@ -18,6 +18,7 @@ use crate::tcp_server;
 use crate::upstream;
 use crate::data::{ self, config };
 use crate::letsencrypt;
+use crate::misc;
 
 
 lazy_static! {
@@ -268,8 +269,9 @@ async fn add_ssl_certificates(req: Request<Body>, _client_addr : &SocketAddr) ->
                             ssl_certificate.issuer = Some(common_name.as_str().to_string());
                         }
                     }
-                    ssl_certificate.valid_from = Some(x509.tbs_certificate.validity.not_before.rfc3339().to_string());
-                    ssl_certificate.valid_to = Some(x509.tbs_certificate.validity.not_after.rfc3339().to_string());
+  
+                    ssl_certificate.valid_from = Some(misc::convert_to_rfc3339(&x509.tbs_certificate.validity.not_before));
+                    ssl_certificate.valid_to = Some(misc::convert_to_rfc3339(&x509.tbs_certificate.validity.not_after));
                 },
             }
         }

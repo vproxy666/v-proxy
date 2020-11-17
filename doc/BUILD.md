@@ -23,7 +23,7 @@ EOF
 
 ```
 export RUST_LOG=info
-cargo run -- --http_port=8887 --https_port=8888 --web_root=/home/v-proxy/docker/web
+cargo run -- --http_port=8887 --https_port=8888 --web_root=/home/vproxydev/v-proxy/docker/web
 ```
 
 

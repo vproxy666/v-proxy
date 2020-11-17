@@ -10,7 +10,7 @@ use regex::Regex;
 use crate::tcp_server;
 use crate::data;
 use crate::data::config;
-
+use crate::misc;
 
 
 
@@ -134,8 +134,8 @@ async fn import_ssl(domain:String, certificate: Vec<u8>, key: Vec<u8>) -> Result
                             ssl_certificate.issuer = Some(common_name.as_str().to_string());
                         }
                     }
-                    ssl_certificate.valid_from = Some(x509.tbs_certificate.validity.not_before.rfc3339().to_string());
-                    ssl_certificate.valid_to = Some(x509.tbs_certificate.validity.not_after.rfc3339().to_string());
+                    ssl_certificate.valid_from = Some(misc::convert_to_rfc3339(&x509.tbs_certificate.validity.not_before));
+                    ssl_certificate.valid_to = Some(misc::convert_to_rfc3339(&x509.tbs_certificate.validity.not_after));
                 },
             }
         }
